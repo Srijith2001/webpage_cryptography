@@ -29,7 +29,7 @@ def homepage():
     # Return a Jinja2 HTML template and pass in image_entities as a parameter.
     return render_template('homepage.html', image_entities=image_entities)
 
-@app.route('/')
+"""@app.route('/')
 def encrypt():
     # Create a Cloud Datastore client.
     datastore_client = datastore.Client()
@@ -53,12 +53,12 @@ def decrypt():
     image_entities = list(query.fetch())
 
     # Return a Jinja2 HTML template and pass in image_entities as a parameter.
-    return render_template('decrypt.html', image_entities=image_entities)
+    return render_template('decrypt.html', image_entities=image_entities)"""
 
 
 @app.route('/encrypt_photo', methods=['GET', 'POST'])
 def encrypt_photo():
-    photo = request.files['file']
+    photo = request.files['e_file']
 
     # Create a Cloud Storage client.
     storage_client = storage.Client()
@@ -108,7 +108,7 @@ def encrypt_photo():
 
 @app.route('/decrypt_photo', methods=['GET', 'POST'])
 def decrypt_photo():
-    photo = request.files['file']
+    photo = request.files['d_file']
 
     # Create a Cloud Storage client.
     storage_client = storage.Client()

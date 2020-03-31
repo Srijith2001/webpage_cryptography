@@ -15,7 +15,7 @@ def power1(x,y,m):
 	return ans
 
 def encrypt():
-	jpgfile=Image.open('file')
+	jpgfile=Image.open('e_file')
 	print (jpgfile.bits, jpgfile.size, jpgfile.format)
 	row,col = jpgfile.size
 	pixels = jpgfile.load()
@@ -72,7 +72,7 @@ def encrypt():
 	return img
 
 def decrypt():
-	jpgfile=Image.open('file')
+	jpgfile=Image.open('d_file')
 	print (jpgfile.bits, jpgfile.size, jpgfile.format)
 	row,col = jpgfile.size
 
