@@ -8,7 +8,7 @@ from flask import Flask, redirect, render_template, request
 from google.cloud import datastore
 from google.cloud import storage
 from google.cloud import vision
-
+from PIL import Image
 
 CLOUD_STORAGE_BUCKET = os.environ.get('CLOUD_STORAGE_BUCKET')
 
@@ -27,7 +27,33 @@ def homepage():
     image_entities = list(query.fetch())
 
     # Return a Jinja2 HTML template and pass in image_entities as a parameter.
-    return render_template('homepage.HTML', image_entities=image_entities)
+    return render_template('homepage.html', image_entities=image_entities)
+
+@app.route('/')
+def encrypt():
+    # Create a Cloud Datastore client.
+    datastore_client = datastore.Client()
+
+    # Use the Cloud Datastore client to fetch information from Datastore about
+    # each photo.
+    query = datastore_client.query(kind='Faces')
+    image_entities = list(query.fetch())
+
+    # Return a Jinja2 HTML template and pass in image_entities as a parameter.
+    return render_template('encrypt.html', image_entities=image_entities)
+
+@app.route('/')
+def decrypt():
+    # Create a Cloud Datastore client.
+    datastore_client = datastore.Client()
+
+    # Use the Cloud Datastore client to fetch information from Datastore about
+    # each photo.
+    query = datastore_client.query(kind='Faces')
+    image_entities = list(query.fetch())
+
+    # Return a Jinja2 HTML template and pass in image_entities as a parameter.
+    return render_template('decrypt.html', image_entities=image_entities)
 
 
 @app.route('/encrypt_photo', methods=['GET', 'POST'])
@@ -49,7 +75,7 @@ def encrypt_photo():
     blob.make_public()
 
     # Create a Response
-    response=template.crypto.encrypt(image=photo)
+    response=encrypt()
 
     # Create a Cloud Datastore client.
     datastore_client = datastore.Client()
@@ -99,7 +125,7 @@ def decrypt_photo():
     blob.make_public()
 
     # Create a response
-    response=decrypt(image=photo)
+    response=decrypt()
 
     # Create a Cloud Datastore client.
     datastore_client = datastore.Client()
