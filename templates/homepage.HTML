@@ -1,22 +1,17 @@
 <html>
+  <head>
+    <title>Cryptography</title>
+  </head>
   <body>
-    <h1>Google Cloud Platform - Text - extraction from images </h1>
-    <p> Submitted by        <br>      
-      B.Aakash (12203004) II year B. Tech CSE <br>
-      Y. Leela Soundarya(121004145) III year B.Tech ECE<br>
-      M S Sucharita(121004248) III year B.Tech ECE<br>
-    </p>
-
-
-    <br>
-    <form action="upload_photo" method="POST" enctype="multipart/form-data">
-      Upload File: <input type="file" name="file"><br>
-      <input type="submit" name="submit" value="Submit">
-    </form>
-    {% for image_entity in image_entities %}
-      <img src="{{image_entity['image_public_url']}}" width=200 height=200>
-      <p>{{image_entity['blob_name']}} was uploaded {{image_entity['timestamp']}}.</p>
-      <p>Predicted Number is :-  {{image_entity['joy']}}</p>
-    {% endfor %}
+    <centre>
+      <h1>Google Cloud Platform - Image Encryption & Decryption Using RSA </h1>
+      <p>   Submitted by        <br>      
+        Chris Rohan M (122014010) II year B.Tech ICT <br>
+        Srijith Bharadwaj D (122014051) II year B.Tech ICT<br>
+      </p>
+      <br><br>
+      <button type="submit" formaction="encrypt.html">Encrypt</button>
+      <button type="submit" formaction="decrypt.html">Decrypt</button>
+    </centre>
   </body>
 </html>

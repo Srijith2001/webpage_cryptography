@@ -1,6 +1,7 @@
 from datetime import datetime
 import logging
 import os
+import templates.crypto
 
 from flask import Flask, redirect, render_template, request
 
@@ -29,8 +30,8 @@ def homepage():
     return render_template('homepage.HTML', image_entities=image_entities)
 
 
-@app.route('/upload_photo', methods=['GET', 'POST'])
-def upload_photo():
+@app.route('/encrypt_photo', methods=['GET', 'POST'])
+def encrypt_photo():
     photo = request.files['file']
 
     # Create a Cloud Storage client.
@@ -47,15 +48,8 @@ def upload_photo():
     # Make the blob publicly viewable.
     blob.make_public()
 
-    # Create a Cloud Vision client.
-    vision_client = vision.ImageAnnotatorClient()
-
-    # Use the Cloud Vision client to detect a face for our image.
-    source_uri = 'gs://{}/{}'.format(CLOUD_STORAGE_BUCKET, blob.name)
-    image = vision.types.Image(source=vision.types.ImageSource(gcs_image_uri=source_uri))
-    response=vision_client.document_text_detection(image=image)
-
-    docu = response.full_text_annotation.text
+    # Create a Response
+    response=template.crypto.encrypt(image=photo)
 
     # Create a Cloud Datastore client.
     datastore_client = datastore.Client()
@@ -78,7 +72,57 @@ def upload_photo():
     entity['blob_name'] = blob.name
     entity['image_public_url'] = blob.public_url
     entity['timestamp'] = current_datetime
-    entity['joy'] = docu
+    entity['joy'] = response
+
+    # Save the new entity to Datastore.
+    datastore_client.put(entity)
+
+    # Redirect to the home page.
+    return redirect('/')
+
+@app.route('/decrypt_photo', methods=['GET', 'POST'])
+def decrypt_photo():
+    photo = request.files['file']
+
+    # Create a Cloud Storage client.
+    storage_client = storage.Client()
+
+    # Get the bucket that the file will be uploaded to.
+    bucket = storage_client.get_bucket(CLOUD_STORAGE_BUCKET)
+
+    # Create a new blob and upload the file's content.
+    blob = bucket.blob(photo.filename)
+    blob.upload_from_string(
+            photo.read(), content_type=photo.content_type)
+
+    # Make the blob publicly viewable.
+    blob.make_public()
+
+    # Create a response
+    response=decrypt(image=photo)
+
+    # Create a Cloud Datastore client.
+    datastore_client = datastore.Client()
+
+    # Fetch the current date / time.
+    current_datetime = datetime.now()
+
+    # The kind for the new entity.
+    kind = 'Faces'
+
+    # The name/ID for the new entity.
+    name = blob.name
+
+    # Create the Cloud Datastore key for the new entity.
+    key = datastore_client.key(kind, name)
+
+    # Construct the new entity using the key. Set dictionary values for entity
+    # keys blob_name, storage_public_url, timestamp, and joy.
+    entity = datastore.Entity(key)
+    entity['blob_name'] = blob.name
+    entity['image_public_url'] = blob.public_url
+    entity['timestamp'] = current_datetime
+    entity['joy'] = response
 
     # Save the new entity to Datastore.
     datastore_client.put(entity)
