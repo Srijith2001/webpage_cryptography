@@ -1,7 +1,6 @@
 from datetime import datetime
 import logging
 import os
-import templates.crypto
 
 from flask import Flask, redirect, render_template, request
 
@@ -9,9 +8,9 @@ from google.cloud import datastore
 from google.cloud import storage
 from google.cloud import vision
 from PIL import Image
+from crypto import encrypt,decrypt
 
 CLOUD_STORAGE_BUCKET = os.environ.get('CLOUD_STORAGE_BUCKET')
-
 
 app = Flask(__name__)
 
@@ -25,6 +24,8 @@ def homepage():
     # each photo.
     query = datastore_client.query(kind='Faces')
     image_entities = list(query.fetch())
+    image_entities_d = list(query.fetch())
+    image_entities_d.clear()
 
     # Return a Jinja2 HTML template and pass in image_entities as a parameter.
     return render_template('homepage.html', image_entities=image_entities)
@@ -76,6 +77,9 @@ def encrypt_photo():
 
     # Create a Response
     response=encrypt()
+    eimg = bucket.blob(response)
+    eimg.upload_from_filename(response)
+    eimg.make_public()
 
     # Create a Cloud Datastore client.
     datastore_client = datastore.Client()
@@ -99,6 +103,7 @@ def encrypt_photo():
     entity['image_public_url'] = blob.public_url
     entity['timestamp'] = current_datetime
     entity['joy'] = response
+    entity['eimage_url'] = eimg.public_url
 
     # Save the new entity to Datastore.
     datastore_client.put(entity)
@@ -125,7 +130,10 @@ def decrypt_photo():
     blob.make_public()
 
     # Create a response
-    response=decrypt()
+    result=decrypt()
+    dimg = bucket.blob(result)
+    dimg.upload_from_filename(result)
+    dimg.make_public()
 
     # Create a Cloud Datastore client.
     datastore_client = datastore.Client()
@@ -140,7 +148,7 @@ def decrypt_photo():
     name = blob.name
 
     # Create the Cloud Datastore key for the new entity.
-    key = datastore_client.key(kind, name)
+    key = datastore_client2.key(kind, name)
 
     # Construct the new entity using the key. Set dictionary values for entity
     # keys blob_name, storage_public_url, timestamp, and joy.
@@ -148,7 +156,8 @@ def decrypt_photo():
     entity['blob_name'] = blob.name
     entity['image_public_url'] = blob.public_url
     entity['timestamp'] = current_datetime
-    entity['joy'] = response
+    entity['joy'] = result
+    entity['dimage_url'] = dimg.public_url
 
     # Save the new entity to Datastore.
     datastore_client.put(entity)

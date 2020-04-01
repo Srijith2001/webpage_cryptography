@@ -5,6 +5,7 @@ import os,sys
 import numpy 
 
 from PIL import Image
+from flask import request
 def power1(x,y,m):
 	ans=1
 	while(y>0):
@@ -15,7 +16,7 @@ def power1(x,y,m):
 	return ans
 
 def encrypt():
-	jpgfile=Image.open('e_file')
+	jpgfile=Image.open(request.files['e_file'])
 	print (jpgfile.bits, jpgfile.size, jpgfile.format)
 	row,col = jpgfile.size
 	pixels = jpgfile.load()
@@ -69,10 +70,10 @@ def encrypt():
 	img1.save('oute.bmp')
 	j = Image.open("oute.bmp")
 	img = j.save("oute.jpg")
-	return img
+	return "oute.jpg"
 
 def decrypt():
-	jpgfile=Image.open('d_file')
+	jpgfile=Image.open(request.files['d_file'])
 	print (jpgfile.bits, jpgfile.size, jpgfile.format)
 	row,col = jpgfile.size
 
@@ -81,28 +82,15 @@ def decrypt():
 	occ = [0 for x1 in range(row1)]
 	primes = [] 
 	phi[1] = 1
-	#phi[2] = 1
-	#print (phi)
 	for i in range(2,1000001):
-		#print (i)
 		if(phi[i] == 0):
 			phi[i] = i-1
-			#print (i)
 			primes.append(i)
-			#j = 2*i
 			for j in range (2*i,1000001,i):
-				#print("j ",j)
-				#print(j)
 				if(occ[j] == 0):
-					#print ("inside if2")
 					occ[j] = 1
 					phi[j] = j
-					#print (phi[j])
-					#print ((i-1)//i)
 				phi[j] = (phi[j]*(i-1))//i
-				#print(phi[j])
-				#j = j + i
-	#print (primes)
 	p = primes[random.randrange(1,167)]
 	q = primes[random.randrange(1,167)]
 	print( p," ", q)
@@ -131,4 +119,4 @@ def decrypt():
 	img = j.save("out.jpg")
 	p = j.load()
 	print (p[row-1,col-1])
-	return img
+	return "out.jpg"
