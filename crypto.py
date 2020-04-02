@@ -53,7 +53,11 @@ def encrypt():
 	print( p," ", q)
 	n = p*q
 	mod = n
+	phin1 = phi[n]
+	phin2 = phi[phin1]
+	mod1 = phin1
 	e = primes[random.randrange(1,9000)]
+	d = power1(e,phin2-1,mod1)
 	enc = [[0 for x in range(row)] for y in range(col)]
 	for i in range(col):
 		for j in range(row):
@@ -70,17 +74,20 @@ def encrypt():
 	img1.save('oute.bmp')
 	j = Image.open("oute.bmp")
 	img = j.save("oute.jpg")
+	print("Prime Numbers Used:",p,", ",q)
+	print("d = ",d," e= ",e)
 	return "oute.jpg"
 
 def decrypt():
 	jpgfile=Image.open(request.files['d_file'])
 	print (jpgfile.bits, jpgfile.size, jpgfile.format)
 	row,col = jpgfile.size
+	pixels = jpgfile.load()
 
 	row1 = 1000003
 	phi = [0 for x1 in range(row1)]
 	occ = [0 for x1 in range(row1)]
-	primes = [] 
+	primes = []
 	phi[1] = 1
 	for i in range(2,1000001):
 		if(phi[i] == 0):
@@ -91,22 +98,21 @@ def decrypt():
 					occ[j] = 1
 					phi[j] = j
 				phi[j] = (phi[j]*(i-1))//i
-	p = primes[random.randrange(1,167)]
-	q = primes[random.randrange(1,167)]
+	p = int(request.form.get('prime_p'))
+	q = int(request.form.get('prime_q'))
 	print( p," ", q)
 	n = p*q
 	mod = n
 	phin1 = phi[n]
 	phin2 = phi[phin1]
-	e = primes[random.randrange(1,9000)]
+	e = int(request.form.get('key_e'))
 	mod1 = phin1
 	d = power1(e,phin2-1,mod1)
-	enc = [[0 for x in range(row)] for y in range(col)]
 	dec = [[0 for x in range(row)] for y in range(col)]
 
 	for i in range(col):
 		for j in range(row):
-			r,g,b = enc[i][j]
+			r,g,b = pixels[j,i]
 			r1 = power1(r,d,mod)-10
 			g1 = power1(g,d,mod)-10
 			b1 = power1(b,d,mod)-10

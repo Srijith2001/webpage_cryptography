@@ -148,15 +148,15 @@ def decrypt_photo():
     name = blob.name
 
     # Create the Cloud Datastore key for the new entity.
-    key = datastore_client2.key(kind, name)
+    key = datastore_client.key(kind, name)
 
     # Construct the new entity using the key. Set dictionary values for entity
     # keys blob_name, storage_public_url, timestamp, and joy.
     entity = datastore.Entity(key)
-    entity['blob_name'] = blob.name
-    entity['image_public_url'] = blob.public_url
-    entity['timestamp'] = current_datetime
-    entity['joy'] = result
+    entity['blob_name1'] = blob.name
+    entity['image_public_url1'] = blob.public_url
+    entity['timestamp1'] = current_datetime
+    entity['joy1'] = result
     entity['dimage_url'] = dimg.public_url
 
     # Save the new entity to Datastore.
