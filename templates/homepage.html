@@ -3,8 +3,7 @@
     <title>Cryptography</title>
   </head>
   <body>
-    <centre>
-      <h1>Google Cloud Platform - Image Encryption & Decryption Using RSA </h1>
+      <h1>Google Cloud Platform - Image Encryption Using RSA Algorithm </h1>
       <p>   Submitted by        <br>      
         Chris Rohan M (122014010) II year B.Tech ICT <br>
         Srijith Bharadwaj D (122014051) II year B.Tech ICT<br>
@@ -22,21 +21,5 @@
                 <img src="{{image_entity['eimage_url']}}" width=200 height=200></p>
         {% endfor %}
 	<br><br>
-	<h2>Decryption</h2>
-        <form action="decrypt_photo" method="POST" enctype="multipart/form-data">
-            Upload File: <input type="file" name="d_file"><br>
-            Enter Value of Prime p: <input type="text" name="prime_p" id="prime_p"><br>
-            Enter Value of Prime q: <input type="text" name="prime_q" id="prime_q"><br>
-            Enter Key e: <input type="text" name="key_e" id="key_e"><br>
-            <input type="submit" name="submit" value="Submit">
-        </form>
-        {% for image_entity in image_entities_d %}
-            <img src="{{image_entity['image_public_url1']}}" width=200 height=200>
-            <p>{{image_entity['blob_name1']}} was uploaded {{image_entity['timestamp1']}}.</p>
-            <p>Decrypted Image:-<br>
-                <img src="{{image_entity['dimage_url1']}}" width=200 height=200></p>
-        {% endfor %}
-	<br><br>
-    </centre>
   </body>
 </html>

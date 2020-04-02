@@ -8,7 +8,7 @@ from google.cloud import datastore
 from google.cloud import storage
 from google.cloud import vision
 from PIL import Image
-from crypto import encrypt,decrypt
+from crypto import encrypt
 
 CLOUD_STORAGE_BUCKET = os.environ.get('CLOUD_STORAGE_BUCKET')
 
@@ -29,33 +29,6 @@ def homepage():
 
     # Return a Jinja2 HTML template and pass in image_entities as a parameter.
     return render_template('homepage.html', image_entities=image_entities)
-
-"""@app.route('/')
-def encrypt():
-    # Create a Cloud Datastore client.
-    datastore_client = datastore.Client()
-
-    # Use the Cloud Datastore client to fetch information from Datastore about
-    # each photo.
-    query = datastore_client.query(kind='Faces')
-    image_entities = list(query.fetch())
-
-    # Return a Jinja2 HTML template and pass in image_entities as a parameter.
-    return render_template('encrypt.html', image_entities=image_entities)
-
-@app.route('/')
-def decrypt():
-    # Create a Cloud Datastore client.
-    datastore_client = datastore.Client()
-
-    # Use the Cloud Datastore client to fetch information from Datastore about
-    # each photo.
-    query = datastore_client.query(kind='Faces')
-    image_entities = list(query.fetch())
-
-    # Return a Jinja2 HTML template and pass in image_entities as a parameter.
-    return render_template('decrypt.html', image_entities=image_entities)"""
-
 
 @app.route('/encrypt_photo', methods=['GET', 'POST'])
 def encrypt_photo():
@@ -102,7 +75,7 @@ def encrypt_photo():
     entity['blob_name'] = blob.name
     entity['image_public_url'] = blob.public_url
     entity['timestamp'] = current_datetime
-    entity['joy'] = response
+    entity['result'] = response
     entity['eimage_url'] = eimg.public_url
 
     # Save the new entity to Datastore.
@@ -110,61 +83,6 @@ def encrypt_photo():
 
     # Redirect to the home page.
     return redirect('/')
-
-@app.route('/decrypt_photo', methods=['GET', 'POST'])
-def decrypt_photo():
-    photo = request.files['d_file']
-
-    # Create a Cloud Storage client.
-    storage_client = storage.Client()
-
-    # Get the bucket that the file will be uploaded to.
-    bucket = storage_client.get_bucket(CLOUD_STORAGE_BUCKET)
-
-    # Create a new blob and upload the file's content.
-    blob = bucket.blob(photo.filename)
-    blob.upload_from_string(
-            photo.read(), content_type=photo.content_type)
-
-    # Make the blob publicly viewable.
-    blob.make_public()
-
-    # Create a response
-    result=decrypt()
-    dimg = bucket.blob(result)
-    dimg.upload_from_filename(result)
-    dimg.make_public()
-
-    # Create a Cloud Datastore client.
-    datastore_client = datastore.Client()
-
-    # Fetch the current date / time.
-    current_datetime = datetime.now()
-
-    # The kind for the new entity.
-    kind = 'Faces'
-
-    # The name/ID for the new entity.
-    name = blob.name
-
-    # Create the Cloud Datastore key for the new entity.
-    key = datastore_client.key(kind, name)
-
-    # Construct the new entity using the key. Set dictionary values for entity
-    # keys blob_name, storage_public_url, timestamp, and joy.
-    entity = datastore.Entity(key)
-    entity['blob_name1'] = blob.name
-    entity['image_public_url1'] = blob.public_url
-    entity['timestamp1'] = current_datetime
-    entity['joy1'] = result
-    entity['dimage_url'] = dimg.public_url
-
-    # Save the new entity to Datastore.
-    datastore_client.put(entity)
-
-    # Redirect to the home page.
-    return redirect('/')
-
 
 @app.errorhandler(500)
 def server_error(e):
