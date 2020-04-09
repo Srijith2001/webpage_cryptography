@@ -7,10 +7,10 @@ For Example
 -----------
 * Orignal Image:
 <p align="center">
-<img src="https://github.com/Srijith2001/webpage_cryptography/tree/master/img/paris.jpg">
+<img src="https://github.com/Srijith2001/webpage_cryptography/raw/master/img/paris.jpg">
 </p>
 
 * Encrypted Image:
 <p align="center">
-<img src="https://github.com/Srijith2001/webpage_cryptography/tree/master/img/oute.jpg">
+<img src="https://github.com/Srijith2001/webpage_cryptography/raw/master/img/oute.jpg">
 </p>
